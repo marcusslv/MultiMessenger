@@ -4,21 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Contracts\MessageServiceInterface;
 use App\Jobs\SendMessageJob;
+use App\Services\MultiChannelMessageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function send(): JsonResponse
+    public function send(MultiChannelMessageService $multi): JsonResponse
     {
-        SendMessageJob::dispatch(
+        $multi->send(
             'marcusviniciusdasilva6@gmail.com',
-            'Corpo de texto puro com fila',
+            'Mensagem multicanal via fila',
             [
-                'subject' => 'Assunto Fila',
-                'html' => '<p>Enviado com queue!</p>',
-                'tag' => 'queue-email',
-                'metadata' => ['user_id' => 99]
+                'subject' => 'Fila Multicanal',
+                'html' => '<p>Conteúdo HTML</p>',
+                'tag' => 'multicanal-fila',
+                'metadata' => ['user_id' => 987]
             ]
         );
 
