@@ -3,28 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\MessageServiceInterface;
+use App\Jobs\SendMessageJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    protected MessageServiceInterface $messageService;
-
-    public function __construct(MessageServiceInterface $messageService)
-    {
-        $this->messageService = $messageService;
-    }
-
     public function send(): JsonResponse
     {
-        $this->messageService->send(
+        SendMessageJob::dispatch(
             'marcusviniciusdasilva6@gmail.com',
-            'Corpo de texto puro',
+            'Corpo de texto puro com fila',
             [
-                'subject' => 'Assunto do Email',
-                'html' => '<h1>Olá!</h1><p>Seja bem-vindo.</p>',
-                'tag' => 'html-email',
-                'metadata' => ['user_id' => 123]
+                'subject' => 'Assunto Fila',
+                'html' => '<p>Enviado com queue!</p>',
+                'tag' => 'queue-email',
+                'metadata' => ['user_id' => 99]
             ]
         );
 
