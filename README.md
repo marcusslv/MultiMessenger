@@ -1,61 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📬 FlexiMessage
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**FlexiMessage** é um sistema de envio de mensagens desacoplado e extensível para Laravel, com suporte a múltiplos canais (drivers), fallback automático, templates, metadata, tags, e reprocessamento de falhas.
 
-## About Laravel
+## 🚀 Recursos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- ✅ Suporte a múltiplos drivers: `Postmark`, `WhatsApp`, `Mock`, etc.
+- ✅ Fallback automático entre drivers em caso de falha
+- ✅ Envio de e-mails com:
+    - Texto puro (`TextBody`)
+    - HTML (`HtmlBody`)
+    - Templates (`TemplateId`, `TemplateModel`)
+- ✅ Suporte a Tags e Metadata
+- ✅ Registro de falhas no banco de dados
+- ✅ Reprocessamento automático/manual de mensagens falhadas
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🏗️ Estrutura
 
-## Learning Laravel
+- `App\Contracts\MessageServiceInterface`: contrato para todos os drivers
+- `App\Services\*MessageService`: implementações específicas (Postmark, WhatsApp, etc.)
+- `App\Services\FailoverMessageService`: tenta múltiplos drivers em sequência
+- `App\Models\MessageFailure`: registros de falhas
+- `App\Console\Commands\ReprocessFailedMessages`: comando para reprocessar falhas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ⚙️ Instalação
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone o projeto ou copie os arquivos necessários.
+2. Adicione ao `.env`:
 
-## Laravel Sponsors
+```env
+MESSAGE_DRIVER=failover
+POSTMARK_TOKEN=your-postmark-token
+POSTMARK_FROM=your-email@example.com
+WHATSAPP_TOKEN=whatsapp-fake-token
+WHATSAPP_FROM=whatsapp:+1234567890
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Adicione em config/services.php:
 
-### Premium Partners
+```php
+'message' => [
+    'driver' => env('MESSAGE_DRIVER', 'mock'),
+    'api_key' => env('MESSAGE_API_KEY'),
+    'whatsapp_token' => env('WHATSAPP_TOKEN'),
+    'postmark' => [
+        'token' => env('POSTMARK_TOKEN'),
+        'from' => env('POSTMARK_FROM'),
+    ],
+],
+```
+4. Execute as migrations:
+```bash
+php artisan migrate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🔁 Reprocessando falhas
 
-## Contributing
+Para reprocessar mensagens falhadas, execute o comando:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan messages:reprocess
+```
+Remove da base as mensagens que forem reenviadas com sucesso.
 
-## Code of Conduct
+## 📊 Logs de Falhas
+As mensagens que falharem são salvas na tabela message_failures, contendo:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+* Destinatário (to)
 
-## Security Vulnerabilities
+* Mensagem
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+* Driver
 
-## License
+* Motivo da falha
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+* Dados adicionais (options)
+
+* Status
+
+## 📦 Extensível
+Você pode adicionar drivers personalizados com facilidade, bastando implementar MessageServiceInterface.
+
+## 🧪 Testes
+Mock facilmente o envio em testes:
+
+```php
+$this->app->instance(MessageServiceInterface::class, new MockMessageService());
+```
+
+
+
+
+
