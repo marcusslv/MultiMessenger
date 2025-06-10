@@ -1,4 +1,4 @@
-# 📬 FlexiMessage
+# 📬 MultiMessenger
 
 **FlexiMessage** é um sistema de envio de mensagens desacoplado e extensível para Laravel, com suporte a múltiplos canais (drivers), fallback automático, templates, metadata, tags, e reprocessamento de falhas.
 
