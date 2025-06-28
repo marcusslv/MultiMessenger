@@ -23,6 +23,9 @@ class PostmarkEmailService implements MessageServiceInterface
      */
     public function send(string $to, string $message, array $options = []): bool
     {
+        logger("Postmark -> Enviando email para $to: $message");
+        return false;
+
         $subject = $options['subject'] ?? 'Mensagem via Postmark';
         $tag = $options['tag'] ?? null;
         $metadata = $options['metadata'] ?? [];

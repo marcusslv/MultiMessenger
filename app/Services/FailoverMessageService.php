@@ -22,11 +22,14 @@ class FailoverMessageService implements MessageServiceInterface
         Log::info('Iniciando envio de mensagem para: ' . $to);
         foreach ($this->drivers as $driver) {
             try {
-                if ($driver->send($to, $message, $options)) {
-                    Log::info('Envio bem-sucedido com driver: ' . get_class($driver));
-                    return true;
+                if (! $driver->send($to, $message, $options)) {
+                    throw new \InvalidArgumentException("Falha ao enviar mensagem com " . get_class($driver));
                 }
+
+                Log::info('Envio bem-sucedido com driver: ' . get_class($driver));
+                return true;
             } catch (\Throwable $e) {
+                report($e);
                 Log::warning("Driver " . get_class($driver) . " falhou: " . $e->getMessage());
 
                 MessageFailure::create([
@@ -37,6 +40,7 @@ class FailoverMessageService implements MessageServiceInterface
                     'options' => $options,
                     'status' => 'failed',
                 ]);
+                continue;
             }
         }
 

@@ -18,6 +18,6 @@ class WhatsappMessageService implements MessageServiceInterface
     {
         Log::info("WhatsApp -> Enviando para $to: $message usando token: $this->token");
 
-        return true;
+        return false;
     }
 }

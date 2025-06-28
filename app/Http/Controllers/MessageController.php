@@ -22,7 +22,7 @@ class MessageController extends Controller
         $email = $request->get('email', 'marcusviniciusdasilva6@gmail.com');
         $this->messageService->send(
             $email,
-            'Mensagem multicanal via fila',
+            'Mensagem de teste',
             [
                 'subject' => 'Fila Multicanal',
                 'html' => '<p>Conteúdo HTML</p>',
