@@ -16,7 +16,6 @@ class TwilioMessageService implements MessageServiceInterface
 
     public function send(string $to, string $message, array $options = []): bool
     {
-        // Simulação de envio usando Twilio
         Log::info("Twilio -> Enviando para $to: $message com API Key: $this->apiKey");
         return true;
     }

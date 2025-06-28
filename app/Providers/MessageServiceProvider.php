@@ -27,7 +27,9 @@ class MessageServiceProvider extends ServiceProvider
 
             $fallbacks[] = new WhatsappMessageService(config('services.message.whatsapp_token') ?? "");
             $fallbacks[] = new TwilioMessageService(config('services.message.api_key'));
-            $fallbacks[] = new MockMessageService();
+            if (config('app.debug')) {
+                $fallbacks[] = new MockMessageService();
+            }
 
             return new FailoverMessageService(array_merge([$primary], $fallbacks));
         });

@@ -10,10 +10,18 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function send(MultiChannelMessageService $multi): JsonResponse
+    protected $messageService;
+
+    public function __construct(MessageServiceInterface $messageService)
     {
-        $multi->send(
-            'marcusviniciusdasilva6@gmail.com',
+        $this->messageService = $messageService;
+    }
+
+    public function send(Request $request): JsonResponse
+    {
+        $email = $request->get('email', 'marcusviniciusdasilva6@gmail.com');
+        $this->messageService->send(
+            $email,
             'Mensagem multicanal via fila',
             [
                 'subject' => 'Fila Multicanal',
